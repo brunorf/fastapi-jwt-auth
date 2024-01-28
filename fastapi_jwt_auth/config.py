@@ -2,6 +2,7 @@ from datetime import timedelta
 from typing import Optional, Union, Sequence, List
 from pydantic import (
     BaseModel,
+    ConfigDict,
     validator,
     StrictBool,
     StrictInt,
@@ -44,6 +45,8 @@ class LoadConfig(BaseModel):
     authjwt_refresh_csrf_header_name: Optional[StrictStr] = "X-CSRF-Token"
     authjwt_csrf_methods: Optional[Sequence[StrictStr]] = {'POST','PUT','PATCH','DELETE'}
 
+    model_config = ConfigDict(str_min_length = 1, str_strip_whitespace = True)
+
     @validator('authjwt_access_token_expires')
     def validate_access_token_expires(cls, v):
         if v is True:
@@ -79,7 +82,3 @@ class LoadConfig(BaseModel):
         if v.upper() not in {"GET", "HEAD", "POST", "PUT", "DELETE", "PATCH"}:
             raise ValueError("The 'authjwt_csrf_methods' must be between http request methods")
         return v.upper()
-
-    class Config:
-        min_anystr_length = 1
-        anystr_strip_whitespace = True
